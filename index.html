@@ -1952,14 +1952,15 @@
 
           // 데스크탑: wheel 이벤트로 직접 감지 (fixed 오버레이가 scroll 이벤트를 막는 경우 대비)
           const onWheel = (e) => {
-            if (e.deltaY > 0) dismissPopup({ reason: "wheel_scroll" });
+            if (e.deltaY !== 0) dismissPopup({ reason: "wheel_scroll" });
           };
 
           const onTouchMove = (e) => {
             const y = e.touches?.[0]?.clientY;
             if (y == null) return;
             if (lastTouchY != null) {
-              if (lastTouchY - y >= 3) {
+              // 위아래 방향 무관하게 3px 이상 이동하면 해제
+              if (Math.abs(lastTouchY - y) >= 3) {
                 dismissPopup({ reason: "touch_scroll" });
                 return;
               }
