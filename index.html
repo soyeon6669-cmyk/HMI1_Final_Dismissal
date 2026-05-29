@@ -1946,16 +1946,19 @@
           let attached = false;
 
           const onScroll = () => {
-            // 실제 페이지 스크롤 기준: 팝업 등장 시점보다 10px 이상 내려가야 해제
             const dy = (window.scrollY || 0) - openScrollYRef.current;
             if (dy >= 10) dismissPopup({ reason: "window_scroll" });
+          };
+
+          // 데스크탑: wheel 이벤트로 직접 감지 (fixed 오버레이가 scroll 이벤트를 막는 경우 대비)
+          const onWheel = (e) => {
+            if (e.deltaY > 0) dismissPopup({ reason: "wheel_scroll" });
           };
 
           const onTouchMove = (e) => {
             const y = e.touches?.[0]?.clientY;
             if (y == null) return;
             if (lastTouchY != null) {
-              // 손가락이 위로 3px 이상 이동 = 아래 방향 스크롤 제스처
               if (lastTouchY - y >= 3) {
                 dismissPopup({ reason: "touch_scroll" });
                 return;
@@ -1968,11 +1971,11 @@
 
           const attach = () => {
             attached = true;
-            // 리스너 부착 시점의 스크롤 위치를 기준으로 재설정
             openScrollYRef.current = window.scrollY || 0;
-            window.addEventListener("scroll", onScroll, { passive: true });
+            window.addEventListener("scroll",    onScroll,   { passive: true });
+            window.addEventListener("wheel",     onWheel,    { passive: true });
             window.addEventListener("touchmove", onTouchMove, { passive: true });
-            window.addEventListener("touchend", onTouchEnd, { passive: true });
+            window.addEventListener("touchend",  onTouchEnd,  { passive: true });
             window.addEventListener("touchcancel", onTouchEnd, { passive: true });
           };
 
@@ -1981,9 +1984,10 @@
           return () => {
             window.clearTimeout(timerId);
             if (attached) {
-              window.removeEventListener("scroll", onScroll);
+              window.removeEventListener("scroll",    onScroll);
+              window.removeEventListener("wheel",     onWheel);
               window.removeEventListener("touchmove", onTouchMove);
-              window.removeEventListener("touchend", onTouchEnd);
+              window.removeEventListener("touchend",  onTouchEnd);
               window.removeEventListener("touchcancel", onTouchEnd);
             }
           };
