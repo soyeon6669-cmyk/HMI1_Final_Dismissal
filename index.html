@@ -196,6 +196,44 @@
         font-size: 15px; font-weight: 400;
         color: var(--sand);
       }
+      /* ── Mobile overrides ── */
+      @media (max-width: 767px) {
+        /* Toast: 모바일에서 숨김 */
+        .toast-wrapper { display: none !important; }
+
+        /* exp-modal: 패딩 축소 */
+        .exp-modal {
+          padding: 32px 24px 28px !important;
+          border-radius: 20px !important;
+        }
+        .exp-modal h2 { font-size: 22px !important; }
+        .exp-modal p  { font-size: 13px !important; }
+
+        /* 팝업 카드: 좌우 여백 축소 */
+        .popup-mobile-pad { padding: 16px 18px !important; }
+        .popup-mobile-banner { aspect-ratio: 21/8 !important; }
+        .popup-mobile-title { font-size: 18px !important; }
+        .popup-mobile-body  { font-size: 12px !important; padding: 14px 18px !important; }
+        .popup-mobile-footer { padding: 12px 18px 16px !important; }
+
+        /* 상품 상세 모바일 레이아웃 */
+        .detail-grid-mobile {
+          display: flex !important;
+          flex-direction: column !important;
+        }
+        .detail-thumb-mobile { display: none !important; }
+        .detail-img-mobile {
+          width: 100% !important;
+          aspect-ratio: 3/4 !important;
+          min-height: unset !important;
+          border-right: none !important;
+        }
+        .detail-info-mobile {
+          width: 100% !important;
+          max-width: 100% !important;
+          padding: 24px 20px !important;
+        }
+      }
     </style>
   </head>
   <body class="bg-cream text-ink antialiased">
@@ -392,6 +430,7 @@
         return (
           <div
             className={[
+              "toast-wrapper",
               "fixed left-0 right-0 top-0 z-50",
               "mx-auto max-w-[980px] px-4 pt-3",
               visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none",
@@ -846,10 +885,10 @@
             </div>
 
             {/* 메인 그리드: 썸네일 | 대형이미지 | 정보 */}
-            <div style={{display:"grid",gridTemplateColumns:"72px 1fr 380px",gap:"0",maxWidth:"1200px",margin:"0 auto",minHeight:"calc(100vh - 120px)"}}>
+            <div className="detail-grid-mobile" style={{display:"grid",gridTemplateColumns:"72px 1fr 380px",gap:"0",maxWidth:"1200px",margin:"0 auto",minHeight:"calc(100vh - 120px)"}}>
 
-              {/* ── 썸네일 사이드바 ── */}
-              <div style={{padding:"20px 10px",display:"flex",flexDirection:"column",gap:"8px",borderRight:"1px solid var(--line)"}}>
+              {/* ── 썸네일 사이드바 (모바일에서 숨김) ── */}
+              <div className="detail-thumb-mobile" style={{padding:"20px 10px",display:"flex",flexDirection:"column",gap:"8px",borderRight:"1px solid var(--line)"}}>
                 {thumbImgs.slice(0,6).map((imgKey, i) => (
                   <button key={i} onClick={() => setActiveThumb(i)}
                     style={{width:"52px",height:"66px",border: i===activeThumb ? "1px solid var(--ink)" : "1px solid transparent",overflow:"hidden",flexShrink:0,background:"var(--ivory-soft)",cursor:"pointer",transition:"border-color 0.2s"}}>
@@ -862,7 +901,7 @@
               </div>
 
               {/* ── 대형 메인 이미지 ── */}
-              <div style={{background:"#F9F7F3",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",borderRight:"1px solid var(--line)"}}>
+              <div className="detail-img-mobile" style={{background:"#F9F7F3",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",borderRight:"1px solid var(--line)"}}>
                 {IMG[thumbImgs[activeThumb]]
                   ? <img src={IMG[thumbImgs[activeThumb]]} alt={p.title} style={{width:"100%",height:"100%",objectFit:"cover"}} />
                   : <div style={{fontSize:"80px"}}>{p.emoji}</div>
@@ -870,7 +909,7 @@
               </div>
 
               {/* ── 오른쪽 정보 패널 ── */}
-              <div style={{padding:"36px 28px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"0"}}>
+              <div className="detail-info-mobile" style={{padding:"36px 28px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"0"}}>
                 {/* 브랜드 */}
                 <div style={{fontSize:"11px",letterSpacing:"2px",color:"var(--mute)",textTransform:"uppercase",fontFamily:"var(--sans)",marginBottom:"6px"}}>{p.brand}</div>
 
@@ -1454,7 +1493,7 @@
                 aria-modal="false"
               >
                 {/* ── 헤더 ── */}
-                <div style={{
+                <div className="popup-mobile-pad" style={{
                   padding: "22px 24px 18px",
                   borderBottom: "1px solid #D9D2C2",
                   background: "#fff",
@@ -1508,7 +1547,7 @@
                 </div>
 
                 {/* ── 배너 비주얼 ── */}
-                <div style={{
+                <div className="popup-mobile-banner" style={{
                   width: "100%",
                   aspectRatio: "21 / 9",
                   background: content.bannerGradient,
@@ -1555,7 +1594,7 @@
                 </div>
 
                 {/* ── 상품 그리드 ── */}
-                <div style={{ padding: "16px 18px 4px", background: "#fff" }}>
+                <div className="popup-mobile-body" style={{ padding: "16px 18px 4px", background: "#fff" }}>
                   <div style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(4,1fr)",
@@ -1630,7 +1669,7 @@
                 </div>
 
                 {/* ── 하단 닫기 안내 ── */}
-                <div style={{
+                <div className="popup-mobile-footer" style={{
                   padding: "13px 24px 16px",
                   background: "#F4F0E6",
                   textAlign: "center",
@@ -1942,8 +1981,8 @@
             const y = e.touches?.[0]?.clientY;
             if (y == null) return;
             if (lastTouchY != null) {
-              // 손가락이 위로 8px 이상 이동 = 아래 방향 스크롤 제스처
-              if (lastTouchY - y >= 8) {
+              // 손가락이 위로 3px 이상 이동 = 아래 방향 스크롤 제스처
+              if (lastTouchY - y >= 3) {
                 dismissPopup({ reason: "touch_scroll" });
                 return;
               }
@@ -1982,31 +2021,52 @@
         // backdrop/close/auto: global pointerdown capture to classify inside/outside
         useEffect(() => {
           if (!popupOpen) return;
-          const onPointerDownCapture = (e) => {
+          let touchHandled = false;
+          const classify = (clientX, clientY) => {
             const rect = popupRef.current?.getBoundingClientRect?.();
-            const inside =
-              rect &&
-              e.clientX >= rect.left &&
-              e.clientX <= rect.right &&
-              e.clientY >= rect.top &&
-              e.clientY <= rect.bottom;
-
+            return rect &&
+              clientX >= rect.left &&
+              clientX <= rect.right &&
+              clientY >= rect.top &&
+              clientY <= rect.bottom;
+          };
+          const onPointerDownCapture = (e) => {
+            if (e.pointerType === "touch") return; // 터치는 touchstart에서 처리
+            const inside = classify(e.clientX, e.clientY);
             if (mode === DISMISSAL.BACKDROP) {
               if (!inside) dismissPopup({ reason: "backdrop_tap" });
               else invalid({ type: "content_tap" });
               return;
             }
-
             if (mode === DISMISSAL.CLOSE_BUTTON) {
               if (!inside) invalid({ type: "backdrop_tap" });
               else invalid({ type: "content_tap" });
               return;
             }
-
             if (mode === DISMISSAL.AUTO) invalid({ type: "any_click_during_auto" });
           };
-          document.addEventListener("pointerdown", onPointerDownCapture, true);
-          return () => document.removeEventListener("pointerdown", onPointerDownCapture, true);
+          const onTouchStartCapture = (e) => {
+            const t = e.touches[0];
+            if (!t) return;
+            const inside = classify(t.clientX, t.clientY);
+            if (mode === DISMISSAL.BACKDROP) {
+              if (!inside) { touchHandled = true; dismissPopup({ reason: "backdrop_tap" }); }
+              else invalid({ type: "content_tap" });
+              return;
+            }
+            if (mode === DISMISSAL.CLOSE_BUTTON) {
+              if (!inside) invalid({ type: "backdrop_tap" });
+              else invalid({ type: "content_tap" });
+              return;
+            }
+            if (mode === DISMISSAL.AUTO) invalid({ type: "any_click_during_auto" });
+          };
+          document.addEventListener("pointerdown",  onPointerDownCapture,  true);
+          document.addEventListener("touchstart",   onTouchStartCapture,   { capture: true, passive: true });
+          return () => {
+            document.removeEventListener("pointerdown",  onPointerDownCapture,  true);
+            document.removeEventListener("touchstart",   onTouchStartCapture,   true);
+          };
         }, [popupOpen, mode, dismissPopup, invalid]);
 
         // close button: CLOSE_BUTTON 모드 또는 AUTO 모드(CircleTimer done) 에서 닫기
